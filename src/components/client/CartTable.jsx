@@ -6,7 +6,6 @@ import { CartContext } from "../../context/CartContext";
 function CartTable() {
   const {
     cartItems,
-    addToCart,
     removeFromCart,
     changeQuantity,
     changeSize,
@@ -19,11 +18,12 @@ function CartTable() {
   };
 
   const handleChangeSize = (id, newSize) => {
+    console.log(newSize)
     changeSize(id, newSize);
   };
 
   const handleDelete = (id) => {
-    const product = cartItems.find((item) => item.id === id);
+    const product = cartItems.find((item) => item.variantId === id); // Sửa id thành productId
     if (product) {
       removeFromCart(product);
     }
@@ -41,8 +41,12 @@ function CartTable() {
           {cartItems.length > 0 ? (
             cartItems.map((product) => (
               <ProductCartItem
-                key={product.id}
-                product={product}
+                key={product.variantId}
+                product={{
+                  ...product,
+                  imageUrl: product.imageUrl,
+                  variantSize: product.variantSize,
+                }}
                 onChangeQuantity={handleChangeQuantity}
                 onChangeSize={handleChangeSize}
                 onDelete={handleDelete}
@@ -92,13 +96,13 @@ function CartTable() {
                   <div>{formatNumber(getCartTotal())} VND</div>
                 </div>
                 <div className="flex justify-between items-center text-lg text-slate-700 font-bold">
-                  <div>Giam</div>
+                  <div>Discount</div> {/* Sửa từ "Giam" thành "Discount" */}
                   <div className="font-normal">0 VND</div>
                 </div>
               </div>
               <div>
                 <div className="my-10 flex justify-between items-center text-2xl font-bold">
-                  <div>Tam tinh</div>
+                  <div>Estimated Total</div> {/* Sửa từ "Tam tinh" thành "Estimated Total" */}
                   <div>{formatNumber(getCartTotal())} VND</div>
                 </div>
               </div>
@@ -107,7 +111,7 @@ function CartTable() {
                 state={{ cartItems }} // Pass cart items as state
                 className="mt-20 block uppercase font-bold text-xl bg-red-500 p-5 text-white text-center hover:text-white"
               >
-                Process to checkout
+                Proceed to Checkout
               </Link>
             </div>
           </div>

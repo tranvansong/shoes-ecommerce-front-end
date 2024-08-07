@@ -5,26 +5,30 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from "@mui/icons-material/Remove";
 
 function ProductCartItem({ product, onChangeQuantity, onChangeSize, onDelete }) {
-  const sizes = ["M", "XL", "S", "L", "XXL"];
   const maxQuantity = 10;
 
   const handleDecrement = () => {
     if (product.quantity > 1) {
-      onChangeQuantity(product.id, product.quantity - 1);
+      onChangeQuantity(product.variantId, product.quantity - 1);
     }
   };
 
   const handleIncrement = () => {
     if (product.quantity < maxQuantity) {
-      onChangeQuantity(product.id, product.quantity + 1);
+      onChangeQuantity(product.variantId, product.quantity + 1);
     }
   };
 
   const handleInputChange = (e) => {
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value) && value >= 1 && value <= maxQuantity) {
-      onChangeQuantity(product.id, value);
+      onChangeQuantity(product.variantId, value);
     }
+  };
+
+  const handleSizeChange = (e) => {
+    console.log(e.target.value)
+    onChangeSize(product.variantId, e.target.value);
   };
 
   const formatNumber = (value) => {
@@ -37,11 +41,11 @@ function ProductCartItem({ product, onChangeQuantity, onChangeSize, onDelete }) 
     <div className="flex gap-x-6 my-8 w-full pb-10 border-b-2 border-gray-600">
       <img
         className="w-44 h-44 bg-cover"
-        src={product.image}
-        alt={product.name}
+        src={product.imageUrl} // Cập nhật trường imageUrl
+        alt={product.productName}
       />
       <div className="w-2/5">
-        <p className="text-2xl font-bold break-words">{product.name}</p>
+        <p className="text-2xl font-bold break-words">{product.productName}</p>
         <p className="text-base font-bold text-gray-400 my-1">
           Price: <span className="font-normal">{formatNumber(product.price)} VND</span>
         </p>
@@ -49,12 +53,12 @@ function ProductCartItem({ product, onChangeQuantity, onChangeSize, onDelete }) 
           <div>
             <p className="text-base font-bold mb-2">Size</p>
             <select
-              value={product.size}
-              onChange={(e) => onChangeSize(product.id, e.target.value)}
+              value={product.variantSize} // Đảm bảo giá trị không phải là đối tượng
+              onChange={handleSizeChange}
             >
-              {sizes.map((size) => (
-                <option key={size} value={size}>
-                  {size}
+              {product.variants.map((variant) => (
+                <option key={variant.id} value={variant.size}>
+                  {variant.size}
                 </option>
               ))}
             </select>
@@ -97,7 +101,7 @@ function ProductCartItem({ product, onChangeQuantity, onChangeSize, onDelete }) 
           </div>
           <div
             className="bg-slate-600 cursor-pointer text-white text-lg font-semibold p-2 inline-block px-10 py-2"
-            onClick={() => onDelete(product.id)}
+            onClick={() => onDelete(product.variantId, product.variantSize)}
           >
             <DeleteIcon style={{ fontSize: "25px" }} />
           </div>

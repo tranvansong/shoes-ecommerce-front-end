@@ -1,55 +1,54 @@
 import React, { createContext, useEffect, useState } from "react";
-import { cartItems as initialCartItems } from "../assets/data";
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(
-    initialCartItems
-      ? initialCartItems
-      : []
-  );
+  const [cartItems, setCartItems] = useState(() => {
+    const storedCartItems = localStorage.getItem("cartItems");
+    return storedCartItems ? JSON.parse(storedCartItems) : [];
+  });
 
   const addToCart = (item) => {
-    const isItemInCart = cartItems.find((cartItem) => cartItem.id === item.id);
+    const isItemInCart = cartItems.find(
+      (cartItem) => cartItem.variantId === item.variantId
+    );
 
     if (isItemInCart) {
       setCartItems(
         cartItems.map((cartItem) =>
-          cartItem.id === item.id
+          cartItem.variantId === item.variantId
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         )
       );
     } else {
+      // If item does not exist, add it to the cart
       setCartItems([...cartItems, { ...item, quantity: 1 }]);
     }
   };
 
-  const removeFromCart = (product) => {
-    console.log("Before removing:", cartItems);
-    const updatedCartItems = cartItems.filter((cartItem) => cartItem.id !== product.id);
-    console.log("After filtering:", updatedCartItems);
+  const removeFromCart = (item) => {
+    console.log(item)
+    const updatedCartItems = cartItems.filter(
+      (cartItem) => !(cartItem.variantId === item.variantId)
+    );
     setCartItems(updatedCartItems);
   };
 
-
-  const changeSize = (id, newSize) => {
+  const changeSize = (variantId, newSize) => {
     setCartItems((prevCartItems) =>
       prevCartItems.map((cartItem) =>
-        cartItem.id === id ? { ...cartItem, size: newSize } : cartItem
+        cartItem.variantId === variantId
+          ? { ...cartItem, variantSize: newSize }
+          : cartItem
       )
     );
   };
 
-  const changeQuantity = (id, newQuantity) => {
-    console.log("handleChangeQuantity called:", id, newQuantity);
+  const changeQuantity = (variantId, newQuantity) => {
     setCartItems((prevCartItems) =>
       prevCartItems.map((cartItem) =>
-        cartItem.id === id
-          ? {
-              ...cartItem,
-              quantity: newQuantity,
-            }
+        cartItem.variantId === variantId
+          ? { ...cartItem, quantity: newQuantity }
           : cartItem
       )
     );

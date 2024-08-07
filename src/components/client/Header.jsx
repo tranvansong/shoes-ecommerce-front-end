@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PhoneIcon from "@mui/icons-material/Phone";
 import MailIcon from "@mui/icons-material/Mail";
 import PersonIcon from "@mui/icons-material/Person";
@@ -6,7 +6,15 @@ import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import { Link } from "react-router-dom";
+
 function Header() {
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  useEffect(() => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setCartItemCount(cartItems.length);
+  }, []);
+
   return (
     <div>
       <div className="flex bg-secondary text-gray-400 text-base justify-between items-center px-10 py-4">
@@ -66,7 +74,7 @@ function Header() {
           <Link to="/cart" className="relative">
             <LocalMallOutlinedIcon style={{ fontSize: "40px" }} />
             <span className="absolute animate-bounce right-0 top-1 w-5 h-5 place-content-center text-center rounded-full bg-bluelight text-white text-xs">
-              3
+              {cartItemCount}
             </span>
           </Link>
         </div>

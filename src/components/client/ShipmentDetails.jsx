@@ -23,7 +23,7 @@ function ShipmentDetails() {
 
   return (
     <div className="my-12 px-10 flex gap-10">
-      <div className="w-7/12">
+      <div className="w-1/2">
         <div className="text-2xl font-bold px-5 py-3 bg-slate-100">
           Shipment Information
         </div>
@@ -127,23 +127,28 @@ function ShipmentDetails() {
           </div>
         </div>
       </div>
-      <div className="w-5/12">
+      <div className="w-1/2">
         <div className="bg-slate-100 p-5">
           <div>
             <h1 className="font-bold border-b-2 border-slate-700 text-2xl pb-4">
               Order
             </h1>
             <div className="space-y-4 text-base">
-              {cartItems.map((product) => (
+              {cartItems.map((item) => (
                 <div
-                  key={product.id}
+                  key={item.variantId}
                   className="flex justify-between border-b py-2"
                 >
-                  <div>
-                    {product.name} ({product.size})
+                  <div className="flex flex-col justify-start">
+                    <div>
+                      {item.productName}
+                    </div>
+                    <div className="text-sm font-bold">
+                      Size: {item.variantSize}
+                    </div>
                   </div>
                   <div>
-                    {product.quantity} x {product.price.toLocaleString()} VND
+                    {item.quantity} x {item.price.toLocaleString()} VND
                   </div>
                 </div>
               ))}

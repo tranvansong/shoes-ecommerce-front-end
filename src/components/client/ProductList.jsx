@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import ProductCard from "./ProductCard";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { getProducts } from "../../api/product/product";
 import LoadingSpinner from "../LoadingSpinner";
+import { Alert, AlertTitle, Snackbar } from "@mui/material";
+import { CartContext } from "../../context/CartContext";
 
 function ProductList({ filters }) {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  console.log(filters)
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const { addToCart } = useContext(CartContext);
+
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
@@ -46,6 +50,33 @@ function ProductList({ filters }) {
     fetchProducts();
   }, [filters]);
 
+  const handleAddToCart = (product, size) => {
+    const variant = product.variants.find(v => v.size === size);
+    if (variant) {
+      const cartItem = {
+        productId: product.id,
+        productName: product.name,
+        variantId: variant.id,
+        variantSize: variant.size,
+        price: product.price,
+        quantity: 1,
+        imageUrl: product.imageUrls[0],
+        variants: product.variants
+      };
+      console.log(cartItem);
+
+      addToCart(cartItem);
+      setOpenSnackbar(true);
+    }
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
   return (
     <div className="w-4/5">
       {isLoading && (
@@ -76,9 +107,25 @@ function ProductList({ filters }) {
       </div>
       <div className="flex items-center gap-x-6 flex-wrap">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} widthClass="w-52" />
+          <ProductCard 
+            key={product.id} 
+            product={product} 
+            widthClass="w-52" 
+            onAddToCart={handleAddToCart}
+          />
         ))}
       </div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={1000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Đặt vị trí thông báo ở góc phải trên
+      >
+        <Alert onClose={handleCloseSnackbar} variant="filled" severity="success" sx={{ width: '100%' }}>
+          <AlertTitle>Success</AlertTitle>
+          Thêm vào giỏ hàng thành công
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
